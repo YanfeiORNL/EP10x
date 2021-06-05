@@ -1317,15 +1317,25 @@ square( T const x )
 }
 
 // cube( x ) == x^3
-template< typename T, class = typename std::enable_if< std::is_arithmetic< T >::value >::type >
+/*template< typename T, class = typename std::enable_if< std::is_arithmetic< T >::value >::type >
 inline
 T
 cube( T const x )
 {
 	return x * x * x;
+}*/
+
+template< typename T, class = typename std::enable_if< std::is_arithmetic< T >::value >::type >
+inline
+T
+cube( T const x )
+{
+    return exp(3*log(x));
 }
 
+
 // quad( x ) == x^4
+/*
 template< typename T, class = typename std::enable_if< std::is_arithmetic< T >::value >::type >
 inline
 T
@@ -1333,7 +1343,16 @@ quad( T const x )
 {
 	T const t( x * x );
 	return t * t;
+}*/
+
+template< typename T, class = typename std::enable_if< std::is_arithmetic< T >::value >::type >
+inline
+T
+quad( T const x )
+{
+    return exp(4*log(x));
 }
+
 
 // pow_2( x ) == x^2
 template< typename T, class = typename std::enable_if< std::is_arithmetic< T >::value >::type >
@@ -1493,7 +1512,8 @@ inline
 T
 cube( T const & x )
 {
-	return x * x * x;
+	//return x * x * x;
+    return exp(3*log(x));
 }
 
 // quad( x ) == x^4
@@ -1502,8 +1522,9 @@ inline
 T
 quad( T const & x )
 {
-	T const t( x * x );
-	return t * t;
+	//T const t( x * x );
+	//return t * t;
+    return exp(4*log(x));
 }
 
 // pow_2( x ) == x^2
@@ -1544,7 +1565,7 @@ T
 pow_4( T const & x )
 {
 	//T const t( x * x );
-	return pow_2(pow_2(x));
+	return exp(4*log(x));
 }
  /*
 double pow_4 (double x)
@@ -1561,7 +1582,7 @@ pow_5( T const & x )
 {
 	//T const t( x * x );
 	//return t * t * x;
-    return pow_2(x)*pow_3(x);
+    return exp(5*log(x));
 }
 /*
 double pow_5(double x)
@@ -1578,7 +1599,7 @@ pow_6( T const & x )
 {
 	//T const t( x * x * x );
 	//return t * t;
-    return pow_2(pow_3(x));
+    return exp(6*log(x));
 }
  /*
 double pow_6(double x)
@@ -1596,7 +1617,7 @@ pow_7( T const & x )
 {
 	//T const t( x * x * x );
 	//return t * t * x;
-    return pow_3(x)*pow_4(x);
+    return exp(7*log(x));
 }
 /*
 double pow_7(double x)
@@ -1614,7 +1635,7 @@ pow_8( T const & x )
 	//T t( x * x );
 	//t *= t;
 	//return t * t;
-    return pow_4(x)*pow_4(x);
+    return exp(8*log(x));
 }
  /*
 double pow_8(double x)
@@ -1631,7 +1652,7 @@ pow_9( T const & x )
 {
 	//T const t( x * x * x );
 	//return t * t * t;
-    return pow_4(x)*pow_5(x);
+    return exp(9*log(x));
 }
  /*
 

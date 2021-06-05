@@ -818,16 +818,14 @@ namespace Psychrometrics {
             }
         }
 #endif
-
-        // Convert temperature from Centigrade to Kelvin.
-        Real64 const Tkel(T + DataGlobalConstants::KelvinConv); // Dry-bulb in REAL(r64) for function passing
+        
 
         // If below -100C,set value of Pressure corresponding to Saturation Temperature of -100C.
         if (Tkel < 173.15) {
             Pascal = 0.0017;
 
             // If below freezing, calculate saturation pressure over ice.
-        } else if (Tkel < DataGlobalConstants::KelvinConv) {      // Tkel >= 173.15
+        } else if (Tkel < 273.15) {      // Tkel >= 173.15 and Tkel<273.15
             Real64 const C1(-5674.5359);     // Coefficient for TKel < KelvinConvK
             Real64 const C2(6.3925247);      // Coefficient for TKel < KelvinConvK
             Real64 const C3(-0.9677843e-2);  // Coefficient for TKel < KelvinConvK
@@ -835,8 +833,10 @@ namespace Psychrometrics {
             Real64 const C5(0.20747825e-8);  // Coefficient for TKel < KelvinConvK
             Real64 const C6(-0.9484024e-12); // Coefficient for TKel < KelvinConvK
             Real64 const C7(4.1635019);      // Coefficient for TKel < KelvinConvK
-            Pascal = std::exp(C1 / Tkel + C2 + Tkel * (C3 + Tkel * (C4 + Tkel * (C5 + C6 * Tkel))) + C7 * std::log(Tkel));
+            #Pascal = std::exp(C1 / Tkel + C2 + Tkel * (C3 + Tkel * (C4 + Tkel * (C5 + C6 * Tkel))) + C7 * std::log(Tkel));
+            Pascal = exp2(C1 + C2*Tkel + Tkel*Tkel * (C3 + Tkel * (C4 + Tkel * (C5 + C6 * Tkel))) + Tkel*C7 * std::log(Tkel));
 
+            
             // If above freezing, calculate saturation pressure over liquid water.
         } else if (Tkel <= 473.15) { // Tkel >= 173.15 // Tkel >= KelvinConv
 #ifndef EP_IF97
@@ -846,7 +846,8 @@ namespace Psychrometrics {
             Real64 const C11(0.41764768e-4);  // Coefficient for TKel >= KelvinConvK
             Real64 const C12(-0.14452093e-7); // Coefficient for TKel >= KelvinConvK
             Real64 const C13(6.5459673);      // Coefficient for TKel >= KelvinConvK
-            Pascal = std::exp(C8 / Tkel + C9 + Tkel * (C10 + Tkel * (C11 + Tkel * C12)) + C13 * std::log(Tkel));
+            //Pascal = std::exp(C8 / Tkel + C9 + Tkel * (C10 + Tkel * (C11 + Tkel * C12)) + C13 * std::log(Tkel));
+            Pascal = exp2(C8 + C9*Tkel + Tkel*Tkel * (C10 + Tkel * (C11 + Tkel * C12)) + Tkel*C13 * std::log(Tkel));
 #else
             // Table 34 in IF97
             Real64 const N1(0.11670521452767e04);
@@ -865,12 +866,14 @@ namespace Psychrometrics {
             Real64 const A = phi2 + N1 * phi + N2;
             Real64 const B = N3 * phi2 + N4 * phi + N5;
             Real64 const C = N6 * phi2 + N7 * phi + N8;
-            Pascal = 1000000.0 * pow_4((2.0 * C) / (-B + std::sqrt((B * B) - 4.0 * A * C)));
+            //Pascal = 1000000.0 * pow_4((2.0 * C) / (-B + std::sqrt((B * B) - 4.0 * A * C)));
+            Pascal = 1000000.0 * pow_4( 0.5*(B + sqrt(B*B-4*A*C))/(A) );
 #endif
             // If above 200C, set value of Pressure corresponding to Saturation Temperature of 200C.
         } else { // Tkel >= 173.15 // Tkel >= KelvinConv // Tkel > 473.15
             Pascal = 1555000.0;
         }
+ 
 
         return Pascal;
     }
